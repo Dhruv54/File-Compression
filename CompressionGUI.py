@@ -18,14 +18,6 @@ def upload_file():
         else:
             progress()
             break
-    
-    # p = Path(file)
-    # filename=p.with_suffix('')
-    # with open(file) as f:
-    #     text=f.read()
-    #     print(text)
-    # with open(f"{filename}_dec.txt",'w') as f:
-    #     f.write(text)
 
 
 
@@ -101,8 +93,8 @@ button.grid(row=3,column=1,padx=25,pady=5)
 
 text_lbl2=Label(root,text="Click here...",font="Sans-serif 13 bold",background="#3AAFA9")
 text_lbl2.grid(row=2,column=3)
-# compress_btn=Button(root,text="Compress",command=compression,border=7)
-compress_btn=Button(root,text="Compress",border=7)
+compress_btn=Button(root,text="Compress",command=compression,border=7)
+# compress_btn=Button(root,text="Compress",border=7)
 c_img=Image.open('cmbtn.png')
 c_img=c_img.resize((130,80),Image.ANTIALIAS)
 cphoto=ImageTk.PhotoImage(c_img)

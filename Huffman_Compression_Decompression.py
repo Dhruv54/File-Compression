@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
 import heapq
 import os
+import pickle
 
 class HuffmanCoding:
     def __init__(self,filename):
@@ -106,8 +108,7 @@ class HuffmanCoding:
         filename, file_extension = os.path.splitext(self.filename)
         output_path = filename + ".bin"
 
-        with open(self.filename, 'r+') as file, open(output_path, 'wb') as output:
-			
+        with open(self.filename, 'r+') as file, open(output_path, 'wb') as output:	
             text = file.read()
             text = text.rstrip()
             frequency = self.make_frequency_dict(text)
@@ -116,12 +117,18 @@ class HuffmanCoding:
             heapq.heapify(self.heap)
             self.make_codes()
             print(self.dict_codes)
-
             encoded_text = self.get_encoded_text(text)			
             padded_encoded_text = self.pad_encoded_text(encoded_text)
             b = self.get_byte_array(padded_encoded_text)
         
             output.write(bytes(b))
+        try:
+            codefile=filename+"_dictcodes"+".bin"
+            code_file = open(codefile, 'wb')
+            pickle.dump(self.rev_mapping,code_file)
+            code_file.close()
+        except:
+            print("Something went wrong")
 
         print("Compressed")		
         return output_path
@@ -134,13 +141,18 @@ class HuffmanCoding:
         encoded_text = padded_encoded_text[:-1*extra_padding]
         return encoded_text
 
-    def decode_text(self, encoded_text):
+    def decode_text(self, encoded_text,filename):
+        codefile=filename+"_dictcodes"+".bin"
+        with open(codefile,'rb') as cf:
+            dict_code=pickle.load(cf)
+
+        print(dict_code)
         current_code = ""
         decoded_text = ""
         for bit in encoded_text:
             current_code += bit
-            if current_code in self.rev_mapping:
-                character=self.rev_mapping[current_code]
+            if current_code in dict_code:
+                character=dict_code[current_code]
                 decoded_text+=character
                 current_code=""
         return decoded_text
@@ -160,7 +172,7 @@ class HuffmanCoding:
                 byte=file.read(1)
 
             encoded_text=self.remove_padding(bit_string)
-            decompressed_text=self.decode_text(encoded_text)
+            decompressed_text=self.decode_text(encoded_text,filename)
             
             output.write(decompressed_text)
         print("Decompressed")
@@ -168,9 +180,15 @@ class HuffmanCoding:
 
 
 if __name__=="__main__":
-    path = "sample.txt"
+    path = "test03.txt"
     h = HuffmanCoding(path)
     output_path = h.compression()
     print("Compressed file path: " + output_path)
     decom_path = h.decompression(output_path)
     print("Decompressed file path: " + decom_path)
+
+    with open('test03.txt', 'r') as f1, open('test03_decompressed.txt', 'r') as f2:
+        a=f1.read()
+        b=f2.read()
+        if a==b:
+            print("successfully done")
